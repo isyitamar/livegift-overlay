@@ -1,25 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="he">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-store">
 <title>LiveGift Studio — Top Gift</title>
 <style>
-:root{color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;background:transparent!important;overflow:hidden;font-family:Inter,"Segoe UI",Arial,sans-serif}
-.stage{position:relative;width:100vw;height:100vh;display:grid;place-items:center;padding:24px}
-.card{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:360px;max-width:min(92vw,760px);padding:26px 34px;transform-origin:center;animation:pop .38s cubic-bezier(.2,.9,.25,1)}
-.gift-img{width:160px;height:160px;display:grid;place-items:center;margin-bottom:-2px;filter:drop-shadow(0 14px 26px rgba(0,0,0,.36))}
+.stage{width:100vw;height:100vh;display:grid;place-items:center;padding:24px}
+.card{display:flex;flex-direction:column;align-items:center;justify-content:center;max-width:min(92vw,760px);padding:24px 34px;transform-origin:center;animation:pop .38s cubic-bezier(.2,.9,.25,1)}
+.gift-img{width:160px;height:160px;display:grid;place-items:center;margin-bottom:0;filter:drop-shadow(0 14px 26px rgba(0,0,0,.36))}
 .gift-img img{width:100%;height:100%;object-fit:contain}
-.fallback{font-size:96px;line-height:1}
-.sender{max-width:700px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;color:#fff;font-size:39px;font-weight:950;letter-spacing:-1.5px;text-shadow:0 3px 14px rgba(0,0,0,.85)}
-.coins{margin-top:-1px;color:#f5e500;font-size:29px;line-height:1.1;font-weight:1000;letter-spacing:-1.1px;text-shadow:0 2px 11px rgba(0,0,0,.8)}
-.gift-name{margin-top:8px;color:rgba(255,255,255,.82);font-size:13px;font-weight:750;text-shadow:0 2px 8px rgba(0,0,0,.9)}
-.empty{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:15px;background:rgba(13,16,20,.80);border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 38px rgba(0,0,0,.26);backdrop-filter:blur(10px);color:#fff}
-.empty-icon{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-size:21px;background:linear-gradient(135deg,rgba(40,230,224,.18),rgba(255,49,95,.20))}
-.empty b{display:block;font-size:13px}.empty span{display:block;margin-top:2px;color:rgba(255,255,255,.55);font-size:10px}
+.gift-fallback{font-size:94px;line-height:1}
+.sender{max-width:700px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;color:#fff;font-size:39px;font-weight:950;letter-spacing:-1.4px;text-shadow:0 3px 14px rgba(0,0,0,.86)}
+.coins{margin-top:2px;color:#f5e500;font-size:29px;line-height:1.1;font-weight:1000;letter-spacing:-1px;text-shadow:0 2px 11px rgba(0,0,0,.82)}
+.gift-name{margin-top:8px;color:rgba(255,255,255,.84);font-size:13px;font-weight:750;text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:280px;padding:24px 30px;text-align:center;filter:drop-shadow(0 12px 28px rgba(0,0,0,.30))}
+.tiktok-logo{width:108px;height:108px;margin-bottom:8px}
+.empty-coins{color:#f5e500;font-size:29px;font-weight:1000;letter-spacing:-1px;text-shadow:0 2px 11px rgba(0,0,0,.82)}
+.empty-text{margin-top:7px;color:#fff;font-size:18px;font-weight:850;text-shadow:0 2px 10px rgba(0,0,0,.86);direction:rtl}
 .hidden{display:none!important}
 @keyframes pop{from{opacity:0;transform:translateY(12px) scale(.9)}to{opacity:1;transform:none}}
 </style>
@@ -27,16 +27,23 @@ html,body{margin:0;width:100%;height:100%;background:transparent!important;overf
 <body>
 <div class="stage">
   <div id="empty" class="empty">
-    <div class="empty-icon">🎁</div>
-    <div><b>No gifts yet</b><span>Waiting for the first gift…</span></div>
+    <svg class="tiktok-logo" viewBox="0 0 100 100" aria-label="TikTok">
+      <path fill="#25F4EE" d="M57 15h12c1 12 8 20 19 22v13c-8 0-15-2-21-7v24c0 18-12 30-29 30-16 0-28-12-28-28s12-28 28-28c3 0 5 0 8 1v14c-2-1-4-1-7-1-8 0-14 6-14 14s6 14 14 14c9 0 14-6 14-17V15h4z" transform="translate(-3 2)"/>
+      <path fill="#FE2C55" d="M61 13h12c1 12 8 20 19 22v13c-8 0-15-2-21-7v24c0 18-12 30-29 30-16 0-28-12-28-28s12-28 28-28c3 0 5 0 8 1v14c-2-1-4-1-7-1-8 0-14 6-14 14s6 14 14 14c9 0 14-6 14-17V13z" transform="translate(2 -2)"/>
+      <path fill="#fff" d="M59 14h12c1 12 8 20 19 22v13c-8 0-15-2-21-7v24c0 18-12 30-29 30-16 0-28-12-28-28s12-28 28-28c3 0 5 0 8 1v14c-2-1-4-1-7-1-8 0-14 6-14 14s6 14 14 14c9 0 14-6 14-17V14z"/>
+    </svg>
+    <div class="empty-coins">0 coins</div>
+    <div class="empty-text">לא נשלחה מתנה עדיין</div>
   </div>
+
   <div id="gift" class="card hidden">
-    <div id="giftImage" class="gift-img"><div class="fallback">🎁</div></div>
-    <div id="sender" class="sender">Viewer</div>
-    <div id="coins" class="coins">1 coin</div>
+    <div id="giftImage" class="gift-img"><div class="gift-fallback">🎁</div></div>
+    <div id="sender" class="sender">TikTok Channel</div>
+    <div id="coins" class="coins">0 coins</div>
     <div id="giftName" class="gift-name">Gift</div>
   </div>
 </div>
+
 <script>
 (() => {
   const TOPIC = "livegift-isyitamar-475bcc9ede8b014db38f7711f0f86d98";
@@ -56,29 +63,34 @@ html,body{margin:0;width:100%;height:100%;background:transparent!important;overf
       gift.classList.add("hidden");
       return;
     }
+
     const next = JSON.stringify([d.username,d.coins,d.giftName,d.image,d.updated]);
     if (next === signature) return;
     signature = next;
+
     empty.classList.add("hidden");
     gift.classList.remove("hidden");
     gift.style.animation = "none";
     void gift.offsetWidth;
     gift.style.animation = "pop .38s cubic-bezier(.2,.9,.25,1)";
-    sender.textContent = d.username || "Viewer";
+
+    sender.textContent = d.username || "TikTok Channel";
     const n = Number(d.coins || 0);
     coins.textContent = n.toLocaleString() + " " + (n === 1 ? "coin" : "coins");
     giftName.textContent = d.giftName || "Gift";
+
     image.replaceChildren();
-    if (d.image && /^https?:\/\//i.test(String(d.image))) {
+    const src = String(d.image || "");
+    if (/^(https?:\/\/|data:image\/)/i.test(src)) {
       const img = new Image();
       img.alt = d.giftName || "Gift";
       img.referrerPolicy = "no-referrer";
       img.onload = () => image.replaceChildren(img);
-      img.onerror = () => { image.innerHTML = '<div class="fallback">🎁</div>'; };
-      img.src = d.image;
+      img.onerror = () => { image.innerHTML = '<div class="gift-fallback">🎁</div>'; };
+      img.src = src;
       image.appendChild(img);
     } else {
-      image.innerHTML = '<div class="fallback">🎁</div>';
+      image.innerHTML = '<div class="gift-fallback">🎁</div>';
     }
   }
 
