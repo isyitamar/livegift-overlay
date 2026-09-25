@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-store">
+<title>LiveGift Studio Action 7</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent!important}
+#stage{position:fixed;inset:0;display:grid;place-items:center;background:transparent}
+video{display:none;width:100%;height:100%;object-fit:contain;background:transparent}
+</style>
+</head>
+<body>
+<div id="stage"><video id="video" playsinline></video></div>
+<script>
+(() => {
+  const TOPIC = "livegift-action-isyitamar-4958d5626bf07a3a1ca9741402e21631-7";
+  const BASE = "https://ntfy.sh/" + TOPIC;
+  const video = document.getElementById("video");
+  const queue = [];
+  let playing = false;
+
+  function next() {
+    if (playing || queue.length === 0) return;
+    const item = queue.shift();
+    playing = true;
+
+    if (item.mediaType === "video") {
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      video.style.display = "block";
+      video.src = item.mediaUrl;
+      video.currentTime = 0;
+      video.onended = finish;
+      video.onerror = finish;
+      const p = video.play();
+      if (p && p.catch) p.catch(finish);
+    } else {
+      video.style.display = "none";
+      const audio = new Audio(item.mediaUrl);
+      audio.preload = "auto";
+      audio.onended = finish;
+      audio.onerror = finish;
+      const p = audio.play();
+      if (p && p.catch) p.catch(finish);
+    }
+  }
+
+  function finish() {
+    video.pause();
+    video.style.display = "none";
+    playing = false;
+    setTimeout(next, 50);
+  }
+
+  function accept(obj) {
+    if (!obj || obj.event !== "message" || !obj.message) return;
+    let data;
+    try { data = JSON.parse(obj.message); } catch { return; }
+    if (!data || data.type !== "play" || !data.mediaUrl) return;
+    queue.push({ mediaUrl: data.mediaUrl, mediaType: data.mediaType === "video" ? "video" : "audio" });
+    next();
+  }
+
+  const es = new EventSource(BASE + "/sse?since=now");
+  es.onmessage = e => { try { accept(JSON.parse(e.data)); } catch {} };
+})();
+</script>
+</body>
+</html>
