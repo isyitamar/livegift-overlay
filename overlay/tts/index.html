@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-store"><title>LiveGift Studio — TTS</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent!important;font-family:Inter,"Segoe UI",Arial,sans-serif}
+#stack{position:fixed;right:36px;bottom:42px;display:flex;flex-direction:column;gap:10px;align-items:flex-end;width:min(440px,calc(100vw - 42px));pointer-events:none}
+.chat{width:100%;display:flex;align-items:flex-start;gap:13px;padding:15px 16px;border:1px solid #ffffff25;border-left:3px solid #2de5db;border-radius:16px;background:linear-gradient(135deg,rgba(19,23,29,.96),rgba(12,17,22,.94));box-shadow:0 14px 48px #0009;backdrop-filter:blur(15px);color:white;animation:show .3s cubic-bezier(.2,.8,.1,1)}
+.avatar{width:43px;height:43px;border:1px solid #ffffff28;border-radius:14px;flex:0 0 43px;display:grid;place-items:center;background:linear-gradient(135deg,#184544,#3a202e);font-size:19px;font-weight:900;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.body{min-width:0;flex:1}.name{font-weight:850;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.handle{color:#31dfd8;font-size:10px;margin-top:3px}.message{font-size:17px;font-weight:640;line-height:1.43;word-wrap:break-word;white-space:pre-wrap;margin-top:9px}.wave{color:#30e7dc;letter-spacing:3px;font-size:13px;margin-top:9px;opacity:.87}.logo{font-weight:1000;font-size:18px;color:#fff;text-shadow:-2px 1px #28ded9,2px -1px #ff376e;flex:0 0 auto}
+#unlock{position:fixed;top:18px;right:22px;pointer-events:auto;display:none;background:#101c1eeb;color:#eafffd;border:1px solid #28ded9;border-radius:12px;padding:12px 15px;font-size:12px;cursor:pointer}
+@keyframes show{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+</style></head><body><div id="stack"></div><button id="unlock">🔊 Enable TTS audio</button><script>
+(() => {
+  const TOPIC = "livegift-tts-isyitamar-20260926-a4f719b8e6";
+  const queue = [];
+  const stack = document.getElementById("stack");
+  const unlock = document.getElementById("unlock");
+  let busy = false;
+  let voices = [];
+  const getVoices=()=>{if("speechSynthesis" in window)voices=window.speechSynthesis.getVoices()||[]};
+  getVoices();
+  if("speechSynthesis" in window)window.speechSynthesis.onvoiceschanged=getVoices;
+  const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  function cardFor(d){
+    const box=document.createElement("div");box.className="chat";
+    const avatar=/^https:\/\//.test(d.avatar||"")?'<img src="'+esc(d.avatar)+'" referrerpolicy="no-referrer" alt="">':esc((d.username||"T").slice(0,1).toUpperCase());
+    box.innerHTML='<div class="avatar">'+avatar+'</div><div class="body"><div class="name">'+esc(d.displayName||d.username||"Viewer")+'</div><div class="handle">@'+esc(d.username||"viewer")+'</div><div class="message" dir="auto">'+esc(d.text)+'</div><div class="wave">▂▅▇▃▆▂▅</div></div><div class="logo">♪</div>';
+    return box;
+  }
+  function chooseVoice(text,preset){
+    getVoices();
+    const lang=/[\u0590-\u05FF]/.test(text)?"he":"en";
+    const available=voices.filter(v=>v.lang.toLowerCase().startsWith(lang));
+    let choice=available[0]||voices[0]||null;
+    if(preset==="female"||preset==="bright")choice=available.find(v=>/female|zira|samantha|aria|jenny/i.test(v.name))||choice;
+    if(preset==="male"||preset==="deep")choice=available.find(v=>/male|david|guy|mark/i.test(v.name)&&!/female/i.test(v.name))||choice;
+    return {voice:choice,lang:choice?.lang||(lang==="he"?"he-IL":"en-US")};
+  }
+  function next(){
+    if(busy||!queue.length)return;
+    busy=true;
+    const d=queue.shift();
+    stack.replaceChildren();
+    const card=cardFor(d);stack.appendChild(card);
+    const finish=()=>{setTimeout(()=>{card.remove();busy=false;next()},700)};
+    if(!("speechSynthesis" in window)){unlock.style.display="block";setTimeout(finish,5200);return;}
+    const utterance=new SpeechSynthesisUtterance(d.text);
+    const v=chooseVoice(d.text,d.voice||"male");
+    utterance.voice=v.voice;
+    utterance.lang=v.lang;
+    utterance.pitch=({male:.86,female:1.24,child:1.7,robot:.45,deep:.58,bright:1.43})[d.voice]||1;
+    utterance.rate=d.voice==="robot"?.82:d.voice==="child"?1.16:1;
+    utterance.volume=1;
+    let settled=false;
+    const done=()=>{if(settled)return;settled=true;clearTimeout(watchdog);finish()};
+    utterance.onend=done;utterance.onerror=done;
+    const watchdog=setTimeout(done,Math.min(30000,3500+d.text.length*185));
+    try{window.speechSynthesis.speak(utterance)}catch{unlock.style.display="block";done()}
+  }
+  function incoming(envelope){
+    if(envelope?.event!=="message"||!envelope.message)return;
+    let d;try{d=JSON.parse(envelope.message)}catch{return}
+    if(d?.type!=="tts"||typeof d.text!=="string"||!d.text.trim())return;
+    queue.push({...d,text:d.text.slice(0,180)});if(queue.length>15)queue.shift();next();
+  }
+  unlock.onclick=()=>{unlock.style.display="none";if("speechSynthesis" in window){window.speechSynthesis.cancel();let u=new SpeechSynthesisUtterance("TTS ready");u.volume=0;window.speechSynthesis.speak(u)}};
+  const es=new EventSource("https://ntfy.sh/"+TOPIC+"/sse?since=now");
+  es.onmessage=e=>{try{incoming(JSON.parse(e.data))}catch{}};
+})();
+</script></body></html>
