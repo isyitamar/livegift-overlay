@@ -12,7 +12,15 @@
 @keyframes show{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 </style></head><body><div id="stack"></div><button id="unlock">🔊 Enable TTS audio</button><script>
 (() => {
-  const TOPIC = "livegift-tts-isyitamar-20260926-a4f719b8e6";
+  // A unique 128-bit topic is generated and kept on the streamer's Windows PC.
+  // It is never stored in this public repository.
+  const TOPIC = new URLSearchParams(location.hash.slice(1)).get("topic") || "";
+  const OUTPUT_MODE = new URLSearchParams(location.search).get("sound") === "overlay" ? "overlay" : "desktop";
+  if (!/^livegift-tts-[0-9a-f]{32}$/.test(TOPIC)) {
+    document.getElementById("stack").textContent = "";
+    console.warn("Copy the complete TTS URL from LiveGift Studio, including the #topic fragment.");
+    return;
+  }
   const queue = [];
   const stack = document.getElementById("stack");
   const unlock = document.getElementById("unlock");
@@ -44,6 +52,12 @@
     stack.replaceChildren();
     const card=cardFor(d);stack.appendChild(card);
     const finish=()=>{setTimeout(()=>{card.remove();busy=false;next()},700)};
+    // In desktop mode the Windows speaker handles the audio. Browser source
+    // is visual-only to avoid audio duplication and autoplay failures.
+    if(OUTPUT_MODE !== "overlay") {
+      setTimeout(finish, Math.min(13000, Math.max(4300, d.text.length * 95)));
+      return;
+    }
     if(!("speechSynthesis" in window)){unlock.style.display="block";setTimeout(finish,5200);return;}
     const utterance=new SpeechSynthesisUtterance(d.text);
     const v=chooseVoice(d.text,d.voice||"male");
